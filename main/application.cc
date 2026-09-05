@@ -789,8 +789,6 @@ void Application::HandleToggleChatEvent() {
         SetDeviceState(kDeviceStateIdle);
         return;
     } else if (state == kDeviceStateWifiConfiguring) {
-        audio_service_.EnableAudioTesting(true);
-        SetDeviceState(kDeviceStateAudioTesting);
         return;
     } else if (state == kDeviceStateAudioTesting) {
         audio_service_.EnableAudioTesting(false);
@@ -853,8 +851,6 @@ void Application::HandleStartListeningEvent() {
         SetDeviceState(kDeviceStateIdle);
         return;
     } else if (state == kDeviceStateWifiConfiguring) {
-        audio_service_.EnableAudioTesting(true);
-        SetDeviceState(kDeviceStateAudioTesting);
         return;
     }
 
@@ -1061,6 +1057,9 @@ void Application::HandleStateChangedEvent() {
         case kDeviceStateWifiConfiguring:
             audio_service_.EnableVoiceProcessing(false);
             audio_service_.EnableWakeWordDetection(false);
+            if (auto codec = board.GetAudioCodec()) {
+                codec->EnableInput(false);
+            }
             break;
         default:
             // Do nothing
